@@ -2,15 +2,18 @@ package school.hei.haapi.model;
 
 import lombok.*;
 import org.hibernate.annotations.TypeDef;
+import school.hei.haapi.repository.types.PostgresEnumType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
+import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
-@Table(name = "\"user\"")
+@Table(name = "\"course\"")
+@TypeDef(name = "pgsql_enum", typeClass = PostgresEnumType.class)
 @Getter
 @Setter
 @ToString
@@ -30,8 +33,15 @@ public class Course implements Serializable {
 
     @NotBlank(message = "Credits name is mandatory")
     private int credits;
-
-    @OneToMany
-    @JoinColumn(name = "main_teacher")
-    private User.Role main_teacher;
+    private int total_hours;
+    @ManyToOne
+    @JoinColumn(name = "main_teacher_id")
+    private User main_teacher_id;
+    @ManyToMany
+    @JoinTable(
+        name= "linked_or_unliked",
+        JoinColumn=@JoinColumn(name = "User_id"),
+        inverseJoinColumn=@JoinColumn(name = "course_id")
+    )
+    private List<User> userStatus;
 }
